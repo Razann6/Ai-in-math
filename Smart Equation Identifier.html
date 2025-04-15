@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Equation Identifier</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      font-family: 'Segoe UI', sans-serif;
+      color: #ffffff;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    h1 {
+      font-size: 2.8em;
+      color: #64b5f6;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 3px #2196f3;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 1.1em;
+      width: 300px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #1e88e5;
+      color: white;
+      padding: 12px 25px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+    }
+
+    #type {
+      font-size: 1.3em;
+      margin-top: 20px;
+      color: #81c784;
+    }
+
+    #plot {
+      margin-top: 30px;
+    }
+
+    /* Footer Style */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #1e1e1e;
+      color: #cccccc;
+      font-size: 1em;
+      padding: 10px 0;
+      font-family: 'Segoe UI', sans-serif;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
+      animation: fadeIn 2s ease-in, glow 2.5s infinite alternate;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glow {
+      from { color: #cccccc; text-shadow: 0 0 5px #64b5f6; }
+      to { color: #ffffff; text-shadow: 0 0 10px #64b5f6, 0 0 20px #2196f3; }
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Smart Equation Identifier</h1>
+  <input type="text" id="equationInput" placeholder="Enter equation like 2*x**2 + 3*x - 5" />
+  <br />
+  <button onclick="analyzeEquation()">Analyze</button>
+  <div id="type"></div>
+  <div id="plot"></div>
+
+  <script>
+    function analyzeEquation() {
+      const input = document.getElementById("equationInput").value;
+      const xValues = [];
+      const yValues = [];
+
+      try {
+        const expr = math.parse(input);
+        const compiled = expr.compile();
+
+        for (let x = -10; x <= 10; x += 0.5) {
+          xValues.push(x);
+          yValues.push(compiled.evaluate({ x }));
+        }
+
+        // Determine degree/type
+        let typeText = "Unidentified equation";
+
+        if (/\*\*2/.test(input)) {
+          typeText = "📗 Quadratic Equation";
+        } else if (/x/.test(input)) {
+          typeText = "📘 Linear Equation";
+        } else {
+          typeText = "📙 Constant or Other";
+        }
+
+        document.getElementById("type").innerText = `Type: ${typeText}`;
+
+        Plotly.newPlot("plot", [{
+          x: xValues,
+          y: yValues,
+          mode: "lines",
+          line: { color: "#03a9f4" }
+        }], {
+          paper_bgcolor: "#1e1e1e",
+          plot_bgcolor: "#1e1e1e",
+          font: { color: "#ffffff" },
+          margin: { t: 30 }
+        });
+      } catch (error) {
+        alert("⚠️ Error: Please enter a valid equation using * and ** (e.g. x**2)");
+      }
+    }
+  </script>
+
+  <footer>
+    Made with 💙 by <strong>Razan</strong> & <strong>Fajer</strong> — Math & Science Fair Project
+  </footer>
+</body>
+</html>
